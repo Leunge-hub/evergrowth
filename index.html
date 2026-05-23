@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evergrowth - 暑期每日日誌</title>
+  <title>Evergrowth - 暑期自律與小樹成長日誌</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -18,15 +18,15 @@
               300: '#a3bbb0',
               400: '#7a9b8c',
               500: '#5c7f70',
-              600: '#466456',
-              700: '#3a5045',
-              800: '#304138',
-              900: '#28362f',
+              600: '#355044', // 深森林綠
+              700: '#2b3f35',
+              800: '#203028',
+              900: '#15201a',
             },
             plant: {
               light: '#86efac',
               dry: '#fca5a5',
-              empty: '#e2e8f0'
+              empty: '#cbd5e1'
             }
           }
         }
@@ -36,7 +36,7 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
     body {
       font-family: 'Noto Sans TC', sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -49,511 +49,533 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    /* 自訂平滑動畫 */
     .growth-transition {
       transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
   </style>
 </head>
-<body class="bg-forest-50 text-forest-900 min-h-screen flex flex-col selection:bg-forest-200">
+<body class="bg-forest-50/70 text-forest-900 min-h-screen flex flex-col selection:bg-forest-200 pb-12">
 
-  <!-- 頂部儲存受限警告橫幅 (預設隱藏，若偵測到 Google Sites / Iframe 限制會自動觸發並更新內容) -->
-  <div id="storage-warning" class="hidden bg-amber-50 border-b border-amber-200 p-3 text-amber-800 text-xs sm:text-sm text-center font-medium sticky top-0 z-50 shadow-sm animate-bounce-short">
-    ⚠️ 偵測到當前瀏覽器限制了資料儲存（可能因為在通訊軟體內開啟或無痕模式）。請使用 Safari 或 Chrome 開啟以確保紀錄不會消失！
-  </div>
-
-  <!-- 主導航欄 -->
+  <!-- 頂部導航欄 (Header) -->
   <header class="bg-white/80 backdrop-blur-md border-b border-forest-100 sticky top-0 z-40 px-4 py-3 sm:py-4">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <!-- 標題與 LOGO -->
-      <div class="flex items-center space-x-2">
-        <div class="bg-forest-100 p-2 rounded-xl text-forest-600">
-          <i data-lucide="sprout" class="w-6 h-6 animate-pulse"></i>
+      <!-- 標題與 LOGO & 儲存指示燈 -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-forest-100 p-2 rounded-2xl text-forest-600">
+          <i data-lucide="sprout" class="w-6 h-6"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight text-forest-800">Evergrowth</h1>
-          <p class="text-[10px] sm:text-xs text-forest-500 font-medium">暑期每日日誌 & 小樹養成記</p>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-black tracking-tight text-forest-800">Evergrowth</h1>
+            <span class="px-2 py-0.5 bg-forest-100 text-forest-600 text-[10px] font-bold rounded-full">Summer 2026</span>
+            
+            <!-- 常駐儲存狀態指示燈 -->
+            <div id="save-indicator" class="flex items-center space-x-1 bg-forest-50 border border-forest-100/80 px-2 py-0.5 rounded-full text-[10px] font-semibold text-forest-500 shadow-sm transition-all duration-300">
+              <span id="save-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="save-indicator-text">已儲存</span>
+            </div>
+          </div>
+          <p class="text-[10px] sm:text-xs text-forest-400 font-medium mt-0.5">暑期自律與小樹成長日誌</p>
         </div>
       </div>
 
-      <!-- 右側備份工具組 -->
-      <div class="flex items-center space-x-2">
-        <button onclick="exportData()" class="flex items-center space-x-1 px-3 py-1.5 bg-white border border-forest-200 hover:border-forest-400 text-forest-700 text-xs sm:text-sm rounded-xl transition duration-200 shadow-sm">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">備份</span>
+      <!-- 右側備份/重置按鈕 -->
+      <div class="flex items-center space-x-1.5">
+        <button onclick="exportData()" title="匯出備份" class="p-2 text-forest-500 hover:text-forest-700 hover:bg-forest-100 rounded-xl transition duration-200">
+          <i data-lucide="file-up" class="w-5 h-5"></i>
         </button>
-        <button onclick="triggerImport()" class="flex items-center space-x-1 px-3 py-1.5 bg-white border border-forest-200 hover:border-forest-400 text-forest-700 text-xs sm:text-sm rounded-xl transition duration-200 shadow-sm">
-          <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">匯入</span>
+        <button onclick="triggerImport()" title="匯入備份" class="p-2 text-forest-500 hover:text-forest-700 hover:bg-forest-100 rounded-xl transition duration-200">
+          <i data-lucide="file-down" class="w-5 h-5"></i>
+        </button>
+        <button onclick="confirmReset()" title="清空所有資料" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition duration-200">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
         </button>
         <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
       </div>
     </div>
   </header>
 
-  <!-- 主內容區 -->
-  <main class="flex-1 max-w-6xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
-    
-    <!-- 左側欄：植物養成中心與日曆導航 (4/12) -->
-    <section class="lg:col-span-5 flex flex-col space-y-6">
-      
-      <!-- 狀態列：包含儲存指示燈與植物養成中心 -->
-      <div class="bg-white p-5 rounded-3xl border border-forest-100 shadow-sm relative overflow-hidden">
-        
-        <!-- 左上角即時儲存狀態指示燈 -->
-        <div class="absolute top-4 left-4 flex items-center space-x-1.5">
-          <div id="save-indicator" class="flex items-center space-x-1 bg-forest-50 border border-forest-100 px-2.5 py-1 rounded-full text-xs font-medium text-forest-500 shadow-sm transition-all duration-300 opacity-100 transform translate-y-0">
-            <span id="save-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span id="save-indicator-text">已儲存</span>
-          </div>
-        </div>
+  <!-- 主內容容器 -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-6">
 
-        <div class="flex flex-col items-center pt-4">
-          <!-- 植物動態展示區 -->
-          <div id="plant-container" class="w-32 h-32 flex items-center justify-center growth-transition relative mb-4">
-            <!-- 動態繪製 SVG -->
-            <svg id="plant-svg" viewBox="0 0 100 100" class="w-full h-full text-forest-600"></svg>
-          </div>
-          
-          <!-- 植物進度資訊 -->
-          <div class="text-center w-full z-10">
-            <span id="plant-stage-badge" class="px-3 py-1 bg-forest-100 text-forest-700 text-xs font-semibold rounded-full tracking-wide">
-              加載中...
-            </span>
-            <h2 id="plant-title" class="text-lg font-bold text-forest-800 mt-2">小樹養成計劃</h2>
-            <p id="plant-desc" class="text-xs text-forest-500 mt-1 px-4">開始記錄你的第一天，讓生命之種發芽！</p>
-            
-            <!-- 進度條 -->
-            <div class="mt-4 bg-forest-50 rounded-full h-2 w-full overflow-hidden border border-forest-100">
-              <div id="plant-progress" class="bg-gradient-to-r from-forest-400 to-forest-600 h-2 rounded-full growth-transition" style="width: 0%"></div>
-            </div>
-            <div class="flex justify-between items-center mt-2 text-[10px] sm:text-xs text-forest-400 font-medium">
-              <span>累積善用：<strong id="stats-days-val" class="text-forest-700">0</strong> 天</span>
-              <span>下一階段：<span id="stats-next-goal">1</span> 天</span>
-            </div>
-          </div>
+    <!-- ==================== 頂部：植物成長儀表板 ==================== -->
+    <section class="bg-white p-5 sm:p-6 rounded-3xl border border-forest-100/50 shadow-sm flex flex-col md:flex-row gap-6">
+      
+      <!-- 左側：植物卡片 -->
+      <div class="bg-white rounded-2xl border border-forest-100/60 p-4 flex flex-col items-center text-center w-full md:w-64 shrink-0 shadow-sm relative">
+        <!-- 頂部三階段浮動標籤 -->
+        <span id="plant-stage-badge" class="absolute -top-3 px-3 py-1 bg-forest-600 text-white text-xs font-bold rounded-full tracking-wide shadow-sm">
+          🌱 種子階段
+        </span>
+        
+        <!-- SVG 植物展示區 -->
+        <div id="plant-container" class="w-32 h-32 flex items-center justify-center growth-transition mt-4 mb-3">
+          <svg id="plant-svg" viewBox="0 0 100 100" class="w-full h-full"></svg>
         </div>
+        
+        <!-- 植物介紹文案 -->
+        <h3 id="plant-title" class="font-bold text-forest-800 text-base">神秘的綠色種子</h3>
+        <p id="plant-desc" class="text-xs text-forest-400 mt-1.5 px-2 leading-relaxed">
+          快寫下今天上午 the 收穫喚醒它吧！
+        </p>
       </div>
 
-      <!-- 快捷月份切換與日曆網格 -->
-      <div class="bg-white p-5 rounded-3xl border border-forest-100 shadow-sm flex flex-col space-y-4">
-        <div class="flex justify-between items-center">
-          <h3 class="font-bold text-forest-800 text-sm sm:text-base flex items-center space-x-1.5">
-            <i data-lucide="calendar" class="w-4 h-4 text-forest-500"></i>
-            <span>日誌日曆</span>
-          </h3>
-          <!-- 月份切換按鈕 -->
-          <div class="flex space-x-1 bg-forest-50 p-1 rounded-xl">
-            <button onclick="changeMonth(5)" id="btn-m5" class="px-3 py-1 text-xs font-semibold rounded-lg transition">5月</button>
-            <button onclick="changeMonth(6)" id="btn-m6" class="px-3 py-1 text-xs font-semibold rounded-lg transition">6月</button>
-            <button onclick="changeMonth(7)" id="btn-m7" class="px-3 py-1 text-xs font-semibold rounded-lg transition">7月</button>
-            <button onclick="changeMonth(8)" id="btn-m8" class="px-3 py-1 text-xs font-semibold rounded-lg transition">8月</button>
+      <!-- 右側：進度分析區 -->
+      <div class="flex-1 flex flex-col justify-between py-1">
+        <div>
+          <!-- 文字位置對調與成長度 -->
+          <div class="flex justify-between items-end">
+            <div>
+              <p class="text-xs text-forest-400 font-bold mb-1">
+                累積「善用時間」天數 (一格綠色 = 0.5 天)
+              </p>
+              <div class="text-3xl sm:text-4xl font-black text-forest-800 tracking-tight">
+                <span id="stats-days-val">0.0</span> <span class="text-sm font-bold text-forest-500">天</span>
+              </div>
+            </div>
+            <!-- 當天填寫完成度 -->
+            <div class="text-right">
+              <span id="stats-percent" class="text-sm sm:text-base font-black text-forest-600">0%</span>
+              <span class="text-xs font-bold text-forest-400 block sm:inline sm:ml-1">今日成長度</span>
+            </div>
+          </div>
+
+          <!-- 進度條 (代表今日填寫完成度) -->
+          <div class="mt-4 bg-forest-100/70 rounded-full h-3.5 w-full overflow-hidden border border-forest-100/30">
+            <div id="plant-progress" class="bg-gradient-to-r from-emerald-400 to-forest-500 h-full rounded-full growth-transition" style="width: 0%"></div>
+          </div>
+
+          <!-- 三階段里程碑分段指示 -->
+          <div class="grid grid-cols-3 gap-1 mt-4 pt-2 text-[10px] sm:text-xs text-forest-400 font-semibold border-t border-forest-50">
+            <div class="text-center border-r border-forest-100/60 pr-1">
+              <span class="block">🌱 種子階段</span>
+              <span class="text-[9px] text-forest-400/80 font-normal">沒有填寫</span>
+            </div>
+            <div class="text-center border-r border-forest-100/60 px-1">
+              <span class="block">🌿 樹苗階段</span>
+              <span class="text-[9px] text-forest-400/80 font-normal">寫了上午</span>
+            </div>
+            <div class="text-center pl-1">
+              <span class="block">🌳 大樹階段</span>
+              <span class="text-[9px] text-forest-400/80 font-normal">寫了上午+下午</span>
+            </div>
           </div>
         </div>
 
-        <!-- 星期表頭 -->
-        <div class="grid grid-cols-7 gap-1 text-center text-[10px] sm:text-xs font-bold text-forest-400">
-          <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
-        </div>
-
-        <!-- 日曆網格容器 -->
-        <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 min-h-[220px]">
-          <!-- JS 動態生成 -->
-        </div>
-
-        <!-- 顏色圖例說明 -->
-        <div class="pt-3 border-t border-forest-50 flex items-center justify-between text-[11px] text-forest-400 font-medium">
-          <div class="flex items-center space-x-1">
-            <span class="w-2.5 h-2.5 rounded-full bg-forest-200"></span>
-            <span>尚未填寫</span>
+        <!-- 底部統計與勵志語錄（優雅的1:2寬度比例排版） -->
+        <div class="grid grid-cols-3 gap-4 mt-6">
+          <!-- 1/3寬度：善用時間格子 (col-span-1) -->
+          <div class="col-span-1 bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 flex flex-col justify-center items-center">
+            <p class="text-xs font-bold text-emerald-700 flex items-center space-x-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>善用時間</span>
+            </p>
+            <p class="text-xl sm:text-2xl font-black text-emerald-800 mt-1">
+              <span id="stats-green-count">0</span> <span class="text-xs font-normal">格</span>
+            </p>
           </div>
-          <div class="flex items-center space-x-1">
-            <span class="w-2.5 h-2.5 rounded-full bg-plant-light"></span>
-            <span>充實/善用</span>
-          </div>
-          <div class="flex items-center space-x-1">
-            <span class="w-2.5 h-2.5 rounded-full bg-plant-dry"></span>
-            <span>放空/虛度</span>
+
+          <!-- 2/3寬度：淡黃色勵志語錄卡 (col-span-2) -->
+          <div class="col-span-2 bg-amber-50/70 border border-amber-200/50 rounded-2xl p-4 flex flex-col justify-center items-center text-center">
+            <div class="text-amber-800 font-medium text-xs sm:text-sm leading-relaxed space-y-1">
+              <p class="font-bold text-amber-900">敢想敢做，錯了就改</p>
+              <p class="text-amber-700">小步慢走，積極試錯</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 右側欄：當日精細編輯面板 (7/12) -->
-    <section id="editor-panel" class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-3xl border border-forest-100 shadow-sm flex flex-col justify-between">
-      <div>
-        <!-- 編輯面板頭部 -->
-        <div class="flex justify-between items-start border-b border-forest-100 pb-4 mb-5">
-          <div>
-            <span id="editor-week" class="text-xs font-semibold text-forest-400 uppercase tracking-widest">星期三</span>
-            <h3 id="editor-date-display" class="text-xl sm:text-2xl font-black text-forest-800">2026年5月13日</h3>
-          </div>
-          <div id="editor-day-badge" class="px-3 py-1.5 bg-forest-50 rounded-2xl flex items-center space-x-1 text-xs font-bold text-forest-600">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-            <span id="editor-score-text">今日尚未評分</span>
-          </div>
-        </div>
+    <!-- ==================== 中間：月份切換導航 ==================== -->
+    <nav class="bg-white p-1.5 rounded-2xl border border-forest-100/50 shadow-sm flex overflow-x-auto no-scrollbar">
+      <button onclick="changeMonth(5)" id="btn-m5" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap min-w-[70px]">
+        5月 <span class="text-[10px] opacity-80">(13日起)</span>
+      </button>
+      <button onclick="changeMonth(6)" id="btn-m6" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap min-w-[70px]">
+        6月
+      </button>
+      <button onclick="changeMonth(7)" id="btn-m7" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap min-w-[70px]">
+        7月
+      </button>
+      <button onclick="changeMonth(8)" id="btn-m8" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap min-w-[70px]">
+        8月
+      </button>
+    </nav>
 
-        <!-- 每日雙格：上午與下午 -->
-        <div class="space-y-6">
-          <!-- 第一格：上午 -->
-          <div class="bg-forest-50/50 border border-forest-100 p-4 rounded-2xl space-y-3 relative group">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-bold text-forest-500 flex items-center space-x-1">
-                <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i>
-                <span>上午格 (0.5天)</span>
-              </span>
-              <!-- 狀態切換開關 -->
-              <div class="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-forest-100">
-                <button onclick="setSlotStatus('slot1', 'empty')" id="btn-slot1-empty" class="px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-200 hover:bg-forest-50 text-forest-400">
-                  無
-                </button>
-                <button onclick="setSlotStatus('slot1', 'green')" id="btn-slot1-green" class="px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-200 hover:bg-green-50 text-green-600 flex items-center space-x-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
-                  <span>善用</span>
-                </button>
-                <button onclick="setSlotStatus('slot1', 'red')" id="btn-slot1-red" class="px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-200 hover:bg-red-50 text-red-600 flex items-center space-x-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>
-                  <span>虛度</span>
-                </button>
-              </div>
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-forest-400 mb-1">任務日誌名稱</label>
-              <input type="text" id="input-slot1" oninput="saveCurrentInputs()" placeholder="輸入今天上午達成的挑戰或手動紀錄..." class="w-full bg-white border border-forest-200 focus:border-forest-500 focus:ring-1 focus:ring-forest-300 rounded-xl px-3.5 py-2.5 text-sm outline-none transition duration-150">
-            </div>
-          </div>
-
-          <!-- 第二格：下午 -->
-          <div class="bg-forest-50/50 border border-forest-100 p-4 rounded-2xl space-y-3 relative group">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-bold text-forest-500 flex items-center space-x-1">
-                <i data-lucide="moon" class="w-3.5 h-3.5 text-indigo-500"></i>
-                <span>下午格 (0.5天)</span>
-              </span>
-              <!-- 狀態切換開關 -->
-              <div class="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-forest-100">
-                <button onclick="setSlotStatus('slot2', 'empty')" id="btn-slot2-empty" class="px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-200 hover:bg-forest-50 text-forest-400">
-                  無
-                </button>
-                <button onclick="setSlotStatus('slot2', 'green')" id="btn-slot2-green" class="px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-200 hover:bg-green-50 text-green-600 flex items-center space-x-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
-                  <span>善用</span>
-                </button>
-                <button onclick="setSlotStatus('slot2', 'red')" id="btn-slot2-red" class="px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-200 hover:bg-red-50 text-red-600 flex items-center space-x-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>
-                  <span>虛度</span>
-                </button>
-              </div>
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-forest-400 mb-1">任務日誌名稱</label>
-              <input type="text" id="input-slot2" oninput="saveCurrentInputs()" placeholder="輸入今天下午達成的挑戰或手動紀錄..." class="w-full bg-white border border-forest-200 focus:border-forest-500 focus:ring-1 focus:ring-forest-300 rounded-xl px-3.5 py-2.5 text-sm outline-none transition duration-150">
-            </div>
-          </div>
-        </div>
+    <!-- ==================== 下方：日曆主體網格 ==================== -->
+    <section class="bg-white p-5 rounded-3xl border border-forest-100/50 shadow-sm flex flex-col space-y-4">
+      <!-- 星期表頭 -->
+      <div class="grid grid-cols-7 gap-2 text-center text-xs font-black text-forest-400 uppercase tracking-wider">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
       </div>
 
-      <!-- 面板底部指引 -->
-      <div class="mt-8 pt-4 border-t border-forest-50 flex items-center justify-between text-xs text-forest-400">
-        <span class="flex items-center space-x-1">
-          <i data-lucide="info" class="w-3.5 h-3.5"></i>
-          <span>資料將自動保存在此手機或瀏覽器中</span>
+      <!-- 日曆單日按鈕網格 -->
+      <div id="calendar-grid" class="grid grid-cols-7 gap-2 sm:gap-3 min-h-[220px]">
+        <!-- JavaScript 會在這裡動態生成雙橫線卡片 -->
+      </div>
+    </section>
+
+    <!-- ==================== 當日編輯卡片 (點選日期後展開) ==================== -->
+    <section id="editor-card" class="hidden bg-white p-5 sm:p-6 rounded-3xl border-2 border-forest-200 shadow-md flex flex-col space-y-5 animate-fade-in">
+      <div class="flex justify-between items-start border-b border-forest-100 pb-3">
+        <div>
+          <span id="editor-week" class="text-xs font-semibold text-forest-400 uppercase tracking-widest">星期三</span>
+          <h3 id="editor-date-display" class="text-lg sm:text-xl font-black text-forest-800">2026年5月13日</h3>
+        </div>
+        <button onclick="closeEditor()" class="p-1.5 hover:bg-forest-100 text-forest-400 hover:text-forest-600 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 上午 & 下午雙格輸入 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- 上午區塊 -->
+        <div class="bg-forest-50/50 border border-forest-100/70 p-4 rounded-2xl space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-forest-500 flex items-center space-x-1">
+              <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>上午格 (0.5天)</span>
+            </span>
+            <!-- 狀態切換 -->
+            <div class="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-forest-100/60">
+              <button onclick="setSlotStatus('slot1', 'green')" id="btn-slot1-green" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all text-green-600 flex items-center space-x-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                <span>善用</span>
+              </button>
+              <button onclick="setSlotStatus('slot1', 'red')" id="btn-slot1-red" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all text-red-600 flex items-center space-x-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span>虛度</span>
+              </button>
+            </div>
+          </div>
+          <input type="text" id="input-slot1" oninput="saveCurrentInputs()" placeholder="今天上午的收穫..." class="w-full bg-white border border-forest-200 focus:border-forest-500 focus:ring-1 focus:ring-forest-300 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none transition">
+        </div>
+
+        <!-- 下午區塊 -->
+        <div class="bg-forest-50/50 border border-forest-100/70 p-4 rounded-2xl space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-forest-500 flex items-center space-x-1">
+              <i data-lucide="moon" class="w-3.5 h-3.5 text-indigo-500"></i>
+              <span>下午格 (0.5天)</span>
+            </span>
+            <!-- 狀態切換 -->
+            <div class="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-forest-100/60">
+              <button onclick="setSlotStatus('slot2', 'green')" id="btn-slot2-green" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all text-green-600 flex items-center space-x-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                <span>善用</span>
+              </button>
+              <button onclick="setSlotStatus('slot2', 'red')" id="btn-slot2-red" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all text-red-600 flex items-center space-x-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span>虛度</span>
+              </button>
+            </div>
+          </div>
+          <input type="text" id="input-slot2" oninput="saveCurrentInputs()" placeholder="今天下午的收穫..." class="w-full bg-white border border-forest-200 focus:border-forest-500 focus:ring-1 focus:ring-forest-300 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none transition">
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 月度銀杏森林 (累積善用時間總覽) ==================== -->
+    <section class="bg-white p-5 sm:p-6 rounded-3xl border border-forest-100/50 shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-forest-800 text-sm sm:text-base flex items-center space-x-1.5">
+          <i data-lucide="trees" class="w-5 h-5 text-forest-500"></i>
+          <span><span id="forest-month-title">5</span>月銀杏森林 (累積善用時間總覽)</span>
+        </h3>
+        <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">
+          1棵樹 = 善用時間 1 天
         </span>
-        <span class="font-semibold text-forest-500">Evergrowth V1.3</span>
+      </div>
+
+      <div class="flex flex-col lg:flex-row items-stretch gap-6 bg-forest-50/30 p-4 rounded-2xl border border-forest-100/30">
+        <!-- 左側：等角投影 3D 地圖 -->
+        <div class="w-full lg:w-3/5 h-[240px] bg-white rounded-xl border border-forest-100/40 relative overflow-hidden flex items-center justify-center">
+          <svg id="forest-3d-svg" viewBox="0 0 500 240" class="w-full h-full"></svg>
+        </div>
+
+        <!-- 右側：生態說明與獨立淡黃色密度卡片 (1:2 排版) -->
+        <div class="w-full lg:w-2/5 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <h4 class="font-black text-forest-800 text-sm flex items-center space-x-1">
+              <span id="forest-accent-badge">🌱</span>
+              <span>屬於我的努力綠洲</span>
+            </h4>
+            <p class="text-xs text-forest-500 leading-relaxed">
+              這片土地會默默記錄你在整個暑假中每一天累積的努力。
+            </p>
+            <p class="text-xs text-forest-400 leading-relaxed font-semibold">
+              善用時間，讓這片銀杏森林隨著暑假一同繁盛吧！
+            </p>
+          </div>
+          
+          <!-- 獨立為淡黃色背景的當前森林密度卡片 -->
+          <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex justify-between items-center shadow-sm">
+            <div class="text-xs text-amber-800 font-bold">當前森林密度：</div>
+            <div class="bg-amber-200 text-amber-900 font-black px-4 py-2 rounded-xl text-sm sm:text-base tracking-tight">
+              <span id="forest-tree-count">0</span> 棵樹
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <footer class="bg-forest-100/50 border-t border-forest-200/50 py-4 px-4 text-center text-xs text-forest-500 mt-10">
-    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-      <p>© 2026 Evergrowth. 所有資料均儲存於您的本地裝置中。</p>
-      <p class="flex items-center space-x-1">
-        <span>用</span>
-        <i data-lucide="heart" class="w-3 h-3 text-red-500 fill-red-500"></i>
-        <span>灌溉我的暑假小樹</span>
+  <!-- 自訂重置彈出視窗 Modal -->
+  <div id="reset-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white max-w-sm w-full p-6 rounded-3xl border border-forest-100 shadow-2xl space-y-4">
+      <h3 class="text-lg font-bold text-forest-800">確定要清空所有資料嗎？</h3>
+      <p class="text-xs text-forest-500 leading-relaxed">
+        這將會抹除你所有的任務紀錄、評分狀態與小樹成長進度。此操作無法復原，建議您先導出備份。
       </p>
+      <div class="flex space-x-2 pt-2">
+        <button onclick="closeResetModal()" class="flex-1 py-2.5 bg-forest-100 hover:bg-forest-200 text-forest-700 text-xs font-bold rounded-xl transition">取消</button>
+        <button onclick="executeReset()" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-xl transition">確定清除</button>
+      </div>
     </div>
-  </footer>
+  </div>
 
   <!-- 自訂動態提示盒 Toast -->
   <div id="toast" class="fixed bottom-6 right-6 bg-forest-800 text-white px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold shadow-xl transition-all duration-300 translate-y-20 opacity-0 pointer-events-none flex items-center space-x-2 z-50">
-    <i data-lucide="check-circle-2" class="w-4 h-4 text-plant-light"></i>
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
     <span id="toast-text">成功</span>
   </div>
 
   <script>
     // ----------------------------------------------------
-    // 1. 全域變數與初始化
+    // 1. 全域設定與初始化
     // ----------------------------------------------------
     const START_DATE = new Date('2026-05-13');
     let currentSelectedDate = new Date('2026-05-13'); 
     let currentActiveMonth = 5; 
-    let isLocalStorageSupported = true; // 紀錄本機儲存支援狀態
-    
-    // 植物養成生長階段定義
+
+    // 植物三階段定義：對應今日完成度 0%、50%、100%
     const GROWTH_STAGES = [
-      { min: 0, title: "奇妙的種子", badge: "階段一：播種 🌱", desc: "這是一顆充滿魔力的自律種子，寫下日誌來澆灌它吧！" },
-      { min: 2, title: "破土的小豆芽", badge: "階段二：萌芽 🌿", desc: "太棒了！種子感受到了你的勤奮，探出了鮮綠的小腦袋。" },
-      { min: 5, title: "茁壯的樹苗", badge: "階段三：小樹苗 🌳", desc: "你的暑假正有條不紊地進行，小樹苗正大口吸收著養分！" },
-      { min: 10, title: "繁茂的常青樹", badge: "階段四：青翠大樹 🌲", desc: "枝繁葉茂！這棵健康的常青樹正是你高度自律的最好證明。" },
-      { min: 18, title: "金燦的豐收樹", badge: "階段五：開花結果 🌸", desc: "哇！樹梢盛開了智慧的花朵，你的暑假已經碩果累累。" },
-      { min: 28, title: "奇幻永恆森林", badge: "階段六：神木之森 ✨", desc: "不可思議！你創造了一個專屬的生態系，自律已成為你強大的習慣！" }
+      { minPercent: 0, title: "神秘的綠色種子", badge: "🌱 種子階段", desc: "快寫下今天上午的收穫喚醒它吧！" },
+      { minPercent: 50, title: "破土的嫩芽", badge: "🌿 樹苗階段", desc: "太棒了！你寫下了上午的收穫，種子已經破土長出小嫩芽！" },
+      { minPercent: 100, title: "黃金銀杏樹", badge: "🌳 大樹階段", desc: "今日挑戰圓滿達成！小樹吸收了上下午的飽滿養分，長成了金黃燦爛的銀杏樹！" }
     ];
 
-    // 本地資料主儲存庫
     let dailyLogs = {};
 
-    // ----------------------------------------------------
-    // 2. 瀏覽器相容性與 LocalStorage 安全存取檢測
-    // ----------------------------------------------------
-    function checkLocalStorageSupport() {
-      try {
-        const testKey = '__storage_test__';
-        localStorage.setItem(testKey, testKey);
-        localStorage.removeItem(testKey);
-        return true;
-      } catch (e) {
-        return false; // 包括拋出 SecurityError 的 Google Sites 嵌入模式
-      }
-    }
-
-    // 初始化載入
     window.onload = function() {
       lucide.createIcons();
-      
-      isLocalStorageSupported = checkLocalStorageSupport();
-      if (!isLocalStorageSupported) {
-        // 顯示專門針對 Google Sites / Iframe 儲存限制的警告橫幅
-        const warningBanner = document.getElementById('storage-warning');
-        warningBanner.innerHTML = `⚠️ 偵測到當前瀏覽器限制了本機儲存（因為網頁被嵌入在 Google Sites 中，或處於無痕模式）。您可以正常記錄，但<strong>重新整理或關閉網頁後資料會消失</strong>！請務必在關閉前點擊右上角<strong>「備份」</strong>，下次進來時點選<strong>「匯入」</strong>。`;
-        warningBanner.classList.remove('hidden');
-      }
-
-      // 載入資料
       loadFromLocalStorage();
-      
-      // 自動跳轉到 5 月
-      changeMonth(5);
-      
-      // 載入當日編輯區
-      selectDate(START_DATE);
+      changeMonth(5); 
+      selectDate(START_DATE); 
     };
 
     // ----------------------------------------------------
-    // 3. 儲存指示器控制器 (修改為：結合 Google Sites 暫存提示)
-    // ----------------------------------------------------
-    function showSavingState() {
-      const indicator = document.getElementById('save-indicator');
-      const dot = document.getElementById('save-indicator-dot');
-      const text = document.getElementById('save-indicator-text');
-
-      indicator.classList.remove('opacity-0', '-translate-y-1');
-      indicator.classList.add('opacity-100', 'translate-y-0');
-      
-      if (isLocalStorageSupported) {
-        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-        text.innerText = "儲存中...";
-      } else {
-        dot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
-        text.innerText = "暫存中...";
-      }
-    }
-
-    function showSavedState(isRealSave = true) {
-      const indicator = document.getElementById('save-indicator');
-      const dot = document.getElementById('save-indicator-dot');
-      const text = document.getElementById('save-indicator-text');
-
-      indicator.classList.remove('opacity-0', '-translate-y-1');
-      indicator.classList.add('opacity-100', 'translate-y-0');
-
-      if (isRealSave) {
-        dot.className = "w-2 h-2 rounded-full bg-emerald-500 transition-colors duration-300";
-        text.innerText = "已儲存";
-      } else {
-        // 亮起橘黃色，警示這是記憶體暫存
-        dot.className = "w-2 h-2 rounded-full bg-amber-500 transition-colors duration-300 animate-pulse";
-        text.innerText = "⚠️ 暫存 (記得備份)";
-      }
-    }
-
-    // ----------------------------------------------------
-    // 4. 資料庫讀寫核心
+    // 2. 儲存機制與指示燈控制
     // ----------------------------------------------------
     function loadFromLocalStorage() {
-      if (isLocalStorageSupported) {
-        try {
-          const stored = localStorage.getItem('evergrowth_logs');
-          if (stored) {
-            dailyLogs = JSON.parse(stored);
-          } else {
-            dailyLogs = {};
-          }
-        } catch (e) {
-          console.error("無法自本地載入資料:", e);
+      try {
+        const stored = localStorage.getItem('evergrowth_logs');
+        if (stored) {
+          dailyLogs = JSON.parse(stored);
+        } else {
           dailyLogs = {};
         }
-      } else {
-        // 不支援時初始化空資料庫 (透過記憶體 Fallback 運作)
+      } catch (e) {
+        console.error("讀取 LocalStorage 失敗:", e);
         dailyLogs = {};
-        showSavedState(false); // 初始就提示當前為暫存狀態
       }
       recalculateStats();
     }
 
+    // 當資料保存時同步觸發儲存狀態
     function saveToLocalStorage() {
       showSavingState();
       
       setTimeout(() => {
         try {
-          if (isLocalStorageSupported) {
-            localStorage.setItem('evergrowth_logs', JSON.stringify(dailyLogs));
-            recalculateStats();
-            showSavedState(true); // 真正寫入成功
-          } else {
-            // Google Sites 嵌入模式：僅在記憶體中更新 UI 與小樹數據
-            recalculateStats();
-            showSavedState(false); // 保持「⚠️ 暫存」狀態
-          }
-        } catch (e) {
-          console.error("寫入儲存空間失敗:", e);
+          localStorage.setItem('evergrowth_logs', JSON.stringify(dailyLogs));
           recalculateStats();
-          showSavedState(false);
+          showSavedState();
+        } catch (e) {
+          console.error("寫入 LocalStorage 失敗:", e);
+          showSaveFailedState();
         }
-      }, 500);
+      }, 400);
     }
 
-    function ensureDateStructure(dateStr) {
-      if (!dailyLogs[dateStr]) {
-        dailyLogs[dateStr] = {};
-      }
-      if (!dailyLogs[dateStr].slot1) {
-        dailyLogs[dateStr].slot1 = { text: "", status: "empty" };
-      }
-      if (!dailyLogs[dateStr].slot2) {
-        dailyLogs[dateStr].slot2 = { text: "", status: "empty" };
-      }
-    }
-
-    // ----------------------------------------------------
-    // 5. 植物養成中心 (動態 SVG 生產器)
-    // ----------------------------------------------------
-    function getStageIndex(greenDays) {
-      for (let i = GROWTH_STAGES.length - 1; i >= 0; i--) {
-        if (greenDays >= GROWTH_STAGES[i].min) {
-          return i;
-        }
-      }
-      return 0;
-    }
-
-    function updatePlantVisualization(greenDays) {
-      const stageIdx = getStageIndex(greenDays);
-      const stage = GROWTH_STAGES[stageIdx];
+    function showSavingState() {
+      const dot = document.getElementById('save-indicator-dot');
+      const text = document.getElementById('save-indicator-text');
       
+      dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+      text.innerText = "儲存中...";
+    }
+
+    function showSavedState() {
+      const dot = document.getElementById('save-indicator-dot');
+      const text = document.getElementById('save-indicator-text');
+      
+      dot.className = "w-2 h-2 rounded-full bg-emerald-500 transition-colors duration-300";
+      text.innerText = "已儲存";
+    }
+
+    function showSaveFailedState() {
+      const dot = document.getElementById('save-indicator-dot');
+      const text = document.getElementById('save-indicator-text');
+      
+      dot.className = "w-2 h-2 rounded-full bg-red-500";
+      text.innerText = "儲存失敗";
+    }
+
+    // ----------------------------------------------------
+    // 3. 數據與植物進化計算
+    // ----------------------------------------------------
+    function recalculateStats() {
+      let greenSlots = 0;
+      let redSlots = 0;
+      let monthlyFullGreenDaysCount = 0; // 用於 3D 森林計數（「當月」上下午皆是善用的天數）
+
+      Object.keys(dailyLogs).forEach(dateStr => {
+        const dayData = dailyLogs[dateStr];
+        const dateObj = new Date(dateStr);
+        
+        if (dateObj >= START_DATE) {
+          const s1 = dayData.slot1?.status || "empty";
+          const s2 = dayData.slot2?.status || "empty";
+
+          if (s1 === 'green') greenSlots++;
+          if (s1 === 'red') redSlots++;
+          if (s2 === 'green') greenSlots++;
+          if (s2 === 'red') redSlots++;
+
+          // 核心邏輯：當日上下午皆是「善用」且日期屬於目前選定的 active 月份時，才計入當月 3D 森林
+          const logMonth = dateObj.getMonth() + 1;
+          if (logMonth === currentActiveMonth) {
+            if (s1 === 'green' && s2 === 'green') {
+              monthlyFullGreenDaysCount++;
+            }
+          }
+        }
+      });
+
+      const greenDays = greenSlots * 0.5;
+
+      // 更新累計天數與各項指標數值
+      document.getElementById('stats-days-val').innerText = greenDays.toFixed(1);
+      document.getElementById('stats-green-count').innerText = greenSlots;
+
+      // 更新 3D 森林的標題月份
+      document.getElementById('forest-month-title').innerText = currentActiveMonth;
+
+      // 計算並更新今日成長度與對應植物型態
+      updateTodayGrowthPercent();
+
+      // 重新繪製當月專屬的 3D 森林
+      render3DForest(monthlyFullGreenDaysCount);
+    }
+
+    // 更新「今日成長度」並驅動植物三階段生長
+    function updateTodayGrowthPercent() {
+      const dateStr = formatDateString(currentSelectedDate);
+      const dayData = dailyLogs[dateStr] || {};
+      
+      const s1 = dayData.slot1?.status || "empty";
+      const s2 = dayData.slot2?.status || "empty";
+
+      let percent = 0;
+      let stageIdx = 0; // 預設 0% -> 種子
+
+      // 必須每日上下午皆是「善用」，今日成長度才會達到 100%，並達到大樹階段
+      if (s1 === 'green' && s2 === 'green') {
+        percent = 100;
+        stageIdx = 2; // 大樹階段
+      } else if (s1 === 'green' || s2 === 'green') {
+        percent = 50;
+        stageIdx = 1; // 樹苗階段
+      } else {
+        percent = 0;
+        stageIdx = 0; // 種子階段
+      }
+
+      // 1. 更新進度數值
+      document.getElementById('stats-percent').innerText = `${percent}%`;
+      document.getElementById('plant-progress').style.width = `${percent}%`;
+
+      // 2. 更新植物卡片的說明與勳章
+      const stage = GROWTH_STAGES[stageIdx];
       document.getElementById('plant-stage-badge').innerText = stage.badge;
       document.getElementById('plant-title').innerText = stage.title;
       document.getElementById('plant-desc').innerText = stage.desc;
-      document.getElementById('stats-days-val').innerText = greenDays.toFixed(1);
 
-      let nextGoalText = "∞";
-      let progressPercent = 100;
-      if (stageIdx < GROWTH_STAGES.length - 1) {
-        const currentMin = stage.min;
-        const nextMin = GROWTH_STAGES[stageIdx + 1].min;
-        nextGoalText = nextMin + " 天";
-        progressPercent = ((greenDays - currentMin) / (nextMin - currentMin)) * 100;
-        progressPercent = Math.min(Math.max(progressPercent, 0), 100);
-      }
-      document.getElementById('stats-next-goal').innerText = nextGoalText;
-      document.getElementById('plant-progress').style.width = `${progressPercent}%`;
-
+      // 3. 繪製對應階段的 SVG 植物
       drawPlantSVG(stageIdx);
     }
 
-    function drawPlantSVG(stage) {
+    // ----------------------------------------------------
+    // 4. 三階段植物 SVG 繪製 (種子 ➡️ 樹苗 ➡️ 黃金銀杏樹)
+    // ----------------------------------------------------
+    function drawPlantSVG(stageIdx) {
       const svg = document.getElementById('plant-svg');
       let content = "";
 
+      // 共通花盆底座
       const potHTML = `
-        <ellipse cx="50" cy="88" rx="20" ry="4" fill="#e2e8f0" />
-        <path d="M34 76 L66 76 L62 90 L38 90 Z" fill="#ffffff" stroke="#c8d7ce" stroke-width="2" stroke-linejoin="round" />
-        <rect x="31" y="72" width="38" height="4" rx="2" fill="#a3bbb0" />
+        <ellipse cx="50" cy="85" rx="18" ry="4" fill="#e2e8f0" />
+        <path d="M36 74 L64 74 L60 87 L40 87 Z" fill="#ffffff" stroke="#c8d7ce" stroke-width="2" stroke-linejoin="round" />
+        <rect x="33" y="70" width="34" height="4" rx="2" fill="#a3bbb0" />
       `;
 
-      switch(stage) {
-        case 0: 
+      switch(stageIdx) {
+        case 0: // 種子階段 (沒有填寫或未達到綠色狀態)
           content = `
             ${potHTML}
-            <path d="M36 72 Q50 64 64 72 Z" fill="#b08d75" />
-            <ellipse cx="50" cy="65" rx="6" ry="8" fill="#e2ba8c" stroke="#5c7f70" stroke-width="1.5" transform="rotate(15 50 65)" />
-            <circle cx="46" cy="61" r="1.5" fill="#ffffff" />
-            <path d="M50 52 L50 46 M42 54 L38 50 M58 54 L62 50" stroke="#86efac" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M38 70 Q50 62 62 70 Z" fill="#b08d75" />
+            <ellipse cx="50" cy="62" rx="5" ry="7" fill="#e2ba8c" stroke="#5c7f70" stroke-width="1.5" transform="rotate(15 50 62)" />
+            <circle cx="48" cy="58" r="1.2" fill="#ffffff" />
+            <circle cx="50" cy="45" r="2.5" fill="#60a5fa" class="animate-pulse" />
+            <path d="M42 45 L38 43 M58 45 L62 43" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" />
           `;
           break;
-        case 1: 
+        case 1: // 樹苗階段 (單格善用 0.5天)
           content = `
             ${potHTML}
-            <path d="M36 72 Q50 64 64 72 Z" fill="#b08d75" />
-            <path d="M50 72 Q50 55 53 45" fill="none" stroke="#5c7f70" stroke-width="3" stroke-linecap="round" />
-            <path d="M53 45 Q64 38 62 50 Q52 52 53 45 Z" fill="#86efac" stroke="#466456" stroke-width="1.5" />
-            <path d="M52 47 Q40 38 43 48 Q50 51 52 47 Z" fill="#4ade80" stroke="#466456" stroke-width="1.5" />
-            <circle cx="50" cy="30" r="1" fill="#7dd3fc" />
+            <path d="M38 70 Q50 62 62 70 Z" fill="#b08d75" />
+            <!-- 樹幹 -->
+            <path d="M50 70 Q48 50 50 35" fill="none" stroke="#78350f" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M49 52 Q40 47 38 41" fill="none" stroke="#78350f" stroke-width="2.5" stroke-linecap="round" />
+            <!-- 樹冠 -->
+            <circle cx="50" cy="30" r="14" fill="#86efac" fill-opacity="0.9" stroke="#466456" stroke-width="1.5" />
+            <circle cx="38" cy="38" r="9" fill="#4ade80" fill-opacity="0.9" stroke="#466456" stroke-width="1.5" />
+            <circle cx="58" cy="28" r="8" fill="#22c55e" fill-opacity="0.8" stroke="#3a5045" stroke-width="1.5" />
           `;
           break;
-        case 2: 
+        case 2: // 大樹階段 (上下午皆是善用，成長度 100%)：模擬手繪黃金銀杏樹
           content = `
             ${potHTML}
-            <path d="M36 72 Q50 64 64 72 Z" fill="#b08d75" />
-            <path d="M50 72 Q48 55 50 40" fill="none" stroke="#78350f" stroke-width="4" stroke-linecap="round" />
-            <path d="M49 55 Q40 50 38 44" fill="none" stroke="#78350f" stroke-width="2.5" stroke-linecap="round" />
-            <circle cx="50" cy="35" r="12" fill="#86efac" fill-opacity="0.9" stroke="#466456" stroke-width="1.5" />
-            <circle cx="38" cy="42" r="8" fill="#4ade80" fill-opacity="0.9" stroke="#466456" stroke-width="1.5" />
-            <circle cx="56" cy="32" r="7" fill="#22c55e" fill-opacity="0.8" stroke="#3a5045" stroke-width="1.5" />
-          `;
-          break;
-        case 3: 
-          content = `
-            ${potHTML}
-            <path d="M50 74 L50 40 M50 65 L40 52 M50 58 L58 48" stroke="#78350f" stroke-width="5" stroke-linecap="round" />
-            <circle cx="50" cy="30" r="18" fill="#4ade80" fill-opacity="0.9" />
-            <circle cx="36" cy="42" r="14" fill="#22c55e" fill-opacity="0.9" />
-            <circle cx="64" cy="40" r="14" fill="#86efac" fill-opacity="0.9" />
-            <circle cx="50" cy="44" r="12" fill="#15803d" fill-opacity="0.8" />
-            <path d="M32 40 C32 25 68 25 68 40 C76 42 76 52 64 54 C50 60 36 54 32 40 Z" fill="none" stroke="#304138" stroke-width="2" />
-          `;
-          break;
-        case 4: 
-          content = `
-            ${potHTML}
-            <path d="M50 74 L50 38 M50 62 L38 50 M50 55 L60 45" stroke="#78350f" stroke-width="5.5" stroke-linecap="round" />
-            <circle cx="50" cy="28" r="18" fill="#22c55e" />
-            <circle cx="36" cy="38" r="13" fill="#16a34a" />
-            <circle cx="62" cy="36" r="14" fill="#4ade80" />
-            <circle cx="50" cy="24" r="3.5" fill="#f43f5e" /><circle cx="50" cy="24" r="1.5" fill="#fef08a" />
-            <circle cx="36" cy="36" r="3" fill="#f43f5e" /><circle cx="36" cy="36" r="1" fill="#fef08a" />
-            <circle cx="58" cy="34" r="3.5" fill="#f43f5e" /><circle cx="58" cy="34" r="1.5" fill="#fef08a" />
-            <circle cx="44" cy="44" r="2.5" fill="#fbbf24" />
-            <circle cx="56" cy="42" r="2.5" fill="#fbbf24" />
-          `;
-          break;
-        case 5: 
-          content = `
-            ${potHTML}
-            <path d="M32 72 L32 55" stroke="#94a3b8" stroke-width="2" />
-            <polygon points="32,45 26,55 38,55" fill="#cbd5e1" />
-            <path d="M68 72 L68 52" stroke="#94a3b8" stroke-width="2" />
-            <polygon points="68,42 62,52 74,52" fill="#cbd5e1" />
-            <path d="M50 74 Q50 35 50 32 M50 60 L36 45 M50 55 L64 42" stroke="#451a03" stroke-width="6" stroke-linecap="round" />
-            <ellipse cx="50" cy="26" rx="22" ry="16" fill="#15803d" />
-            <ellipse cx="36" cy="38" rx="15" ry="12" fill="#166534" />
-            <ellipse cx="64" cy="36" rx="15" ry="12" fill="#22c55e" />
-            <path d="M50 14 L50 8 M47 11 L53 11" stroke="#fef08a" stroke-width="1.5" stroke-linecap="round" />
-            <circle cx="30" cy="22" r="1" fill="#fef08a" />
-            <circle cx="68" cy="20" r="1.5" fill="#fef08a" />
-            <circle cx="52" cy="46" r="1" fill="#fef08a" />
+            <!-- 樹幹與樹枝 -->
+            <path d="M50 72 L50 44" stroke="#4a3728" stroke-width="6" stroke-linecap="round" />
+            <path d="M50 58 Q42 50 36 46" stroke="#4a3728" stroke-width="3" stroke-linecap="round" />
+            <path d="M50 54 Q58 46 64 42" stroke="#4a3728" stroke-width="3" stroke-linecap="round" />
+            <path d="M46 48 Q34 38 30 40" stroke="#4a3728" stroke-width="2" stroke-linecap="round" />
+            
+            <!-- 層次繁茂的金黃銀杏樹冠組合 -->
+            <!-- 底層暗金黃 -->
+            <circle cx="50" cy="30" r="18" fill="#eab308" />
+            <circle cx="36" cy="42" r="14" fill="#ca8a04" />
+            <circle cx="64" cy="40" r="14" fill="#ca8a04" />
+            
+            <!-- 中層溫暖黃 -->
+            <circle cx="44" cy="28" r="14" fill="#facc15" />
+            <circle cx="58" cy="28" r="14" fill="#facc15" />
+            <circle cx="32" cy="36" r="10" fill="#eab308" />
+            <circle cx="68" cy="34" r="11" fill="#eab308" />
+            
+            <!-- 頂層高亮淡黃 -->
+            <circle cx="50" cy="20" r="13" fill="#fef08a" />
+            <circle cx="40" cy="22" r="10" fill="#fef08a" />
+            <circle cx="60" cy="22" r="11" fill="#fef08a" />
+            <circle cx="46" cy="35" r="9" fill="#fef08a" />
+            <circle cx="54" cy="36" r="9" fill="#fef08a" />
+            
+            <!-- 細緻銀杏飄落葉片 -->
+            <path d="M26 62 Q23 66 26 68 Q29 64 26 62" fill="#fef08a" />
+            <path d="M72 58 Q75 62 72 65 Q69 61 72 58" fill="#facc15" />
           `;
           break;
       }
@@ -561,14 +583,67 @@
     }
 
     // ----------------------------------------------------
-    // 6. 日曆建構與渲染
+    // 3D Isometric 森林渲染
     // ----------------------------------------------------
-    const DAYS_IN_MONTH = {
-      5: 31,
-      6: 30,
-      7: 31,
-      8: 31
-    };
+    function render3DForest(fullDaysCount) {
+      const svg = document.getElementById('forest-3d-svg');
+      svg.innerHTML = "";
+
+      // 1. 繪製 3D Isometric 翠綠青草島嶼泥土基座
+      const islandHTML = `
+        <!-- 泥土側邊 - 左 -->
+        <polygon points="250 210, 100 150, 100 165, 250 225" fill="#8d5b4c" />
+        <!-- 泥土側邊 - 右 -->
+        <polygon points="250 210, 400 150, 400 165, 250 225" fill="#6d4439" />
+        <!-- 草地頂面 -->
+        <polygon points="250 210, 100 150, 250 90, 400 150" fill="#a7f3d0" stroke="#6ee7b7" stroke-width="2" />
+        <!-- 3D 質感裝飾網格線 -->
+        <polygon points="250 186, 130 138, 250 90, 370 138" fill="none" stroke="#6ee7b7" stroke-width="0.5" stroke-dasharray="3,3" />
+      `;
+      svg.innerHTML += islandHTML;
+
+      // 2. 計算與顯示樹木數量
+      document.getElementById('forest-tree-count').innerText = fullDaysCount;
+
+      // 3. 預設等角空間固定樹木坐標位置
+      const potentialPositions = [
+        { x: 250, y: 130 }, 
+        { x: 200, y: 140 }, 
+        { x: 300, y: 140 }, 
+        { x: 170, y: 160 }, 
+        { x: 250, y: 170 }, 
+        { x: 330, y: 160 }, 
+        { x: 220, y: 115 }, 
+        { x: 280, y: 115 }, 
+        { x: 140, y: 145 }, 
+        { x: 360, y: 145 }, 
+        { x: 210, y: 190 }, 
+        { x: 290, y: 190 }  
+      ];
+
+      // 4. 在 3D 地圖中種植出當月份的迷你版黃金銀杏樹
+      for (let i = 0; i < Math.min(fullDaysCount, potentialPositions.length); i++) {
+        const pos = potentialPositions[i];
+        
+        const miniTreeHTML = `
+          <g transform="translate(${pos.x - 12}, ${pos.y - 25}) scale(0.3)">
+            <!-- 樹幹 -->
+            <rect x="36" y="55" width="8" height="25" rx="3" fill="#5c4033" />
+            <!-- 黃金漸層樹冠 -->
+            <circle cx="40" cy="35" r="22" fill="#ca8a04" />
+            <circle cx="30" cy="40" r="16" fill="#eab308" />
+            <circle cx="50" cy="38" r="16" fill="#eab308" />
+            <circle cx="40" cy="24" r="14" fill="#fef08a" />
+          </g>
+        `;
+        svg.innerHTML += miniTreeHTML;
+      }
+    }
+
+    // ----------------------------------------------------
+    // 5. 月份與日曆卡片生成
+    // ----------------------------------------------------
+    const DAYS_IN_MONTH = { 5: 31, 6: 30, 7: 31, 8: 31 };
 
     function changeMonth(monthNum) {
       currentActiveMonth = monthNum;
@@ -576,24 +651,27 @@
       for (let m = 5; m <= 8; m++) {
         const btn = document.getElementById(`btn-m${m}`);
         if (m === monthNum) {
-          btn.className = "px-3 py-1 text-xs font-black rounded-lg bg-forest-600 text-white shadow-sm";
+          btn.className = "flex-1 py-3 text-sm font-black rounded-xl bg-forest-600 text-white shadow-sm text-center whitespace-nowrap min-w-[70px]";
         } else {
-          btn.className = "px-3 py-1 text-xs font-bold rounded-lg text-forest-500 hover:text-forest-800 hover:bg-forest-100/50";
+          btn.className = "flex-1 py-3 text-sm font-bold rounded-xl text-forest-400 hover:text-forest-700 hover:bg-forest-50 text-center whitespace-nowrap min-w-[70px]";
         }
       }
       renderCalendar();
+      recalculateStats(); // 確保切換月份時，月度森林同步刷新！
     }
 
     function renderCalendar() {
       const grid = document.getElementById('calendar-grid');
       grid.innerHTML = "";
 
-      const firstDayOfMonthObj = new Date(`2026-0${currentActiveMonth}-01`);
-      const startDayOfWeek = firstDayOfMonthObj.getDay();
+      const firstDayObj = new Date();
+      firstDayObj.setFullYear(2026);
+      firstDayObj.setMonth(currentActiveMonth - 1);
+      firstDayObj.setDate(1);
+      const startOffset = firstDayObj.getDay();
 
-      for (let i = 0; i < startDayOfWeek; i++) {
-        const emptyCell = document.createElement('div');
-        grid.appendChild(emptyCell);
+      for (let i = 0; i < startOffset; i++) {
+        grid.appendChild(document.createElement('div'));
       }
 
       const totalDays = DAYS_IN_MONTH[currentActiveMonth];
@@ -601,57 +679,45 @@
       for (let day = 1; day <= totalDays; day++) {
         const dateStr = `2026-0${currentActiveMonth}-${String(day).padStart(2, '0')}`;
         const dateObj = new Date(dateStr);
-        
+        const isBeforeStart = dateObj < START_DATE;
+
         const dayBtn = document.createElement('button');
         dayBtn.type = "button";
-        
-        const isBeforeStart = dateObj < START_DATE;
-        
+
         if (isBeforeStart) {
           dayBtn.disabled = true;
-          dayBtn.className = "h-11 rounded-xl flex flex-col items-center justify-center text-[10px] text-forest-200 cursor-not-allowed bg-transparent";
+          dayBtn.className = "h-14 sm:h-16 rounded-2xl flex flex-col items-center justify-center text-[11px] text-forest-200 cursor-not-allowed bg-transparent";
           dayBtn.innerHTML = `<span>${day}</span>`;
         } else {
           const dayData = dailyLogs[dateStr] || {};
-          const status1 = dayData.slot1?.status || "empty";
-          const status2 = dayData.slot2?.status || "empty";
-
-          let bgClass = "bg-forest-100 hover:bg-forest-200/80 text-forest-700";
-          
-          if (status1 === "green" && status2 === "green") {
-            bgClass = "bg-emerald-200 hover:bg-emerald-300 text-emerald-900 border border-emerald-300/50";
-          } else if (status1 === "red" && status2 === "red") {
-            bgClass = "bg-red-200 hover:bg-red-300 text-red-900 border border-red-300/50";
-          } else if (status1 === "green" || status2 === "green") {
-            bgClass = "bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-200";
-          } else if (status1 === "red" || status2 === "red") {
-            bgClass = "bg-red-100 hover:bg-red-200 text-red-800 border border-red-200";
-          }
+          const s1 = dayData.slot1?.status || "empty";
+          const s2 = dayData.slot2?.status || "empty";
 
           const isSelected = dateStr === formatDateString(currentSelectedDate);
-          const activeBorder = isSelected ? "ring-2 ring-forest-700 ring-offset-2 scale-105 z-10" : "";
+          const activeBorder = isSelected 
+            ? "border-2 border-forest-600 bg-forest-50/20 scale-105 z-10" 
+            : "border border-forest-100 bg-white hover:bg-forest-50/30";
 
-          dayBtn.className = `h-11 rounded-xl flex flex-col items-center justify-center font-bold text-xs transition-all duration-200 relative ${bgClass} ${activeBorder}`;
+          dayBtn.className = `h-14 sm:h-16 rounded-2xl flex flex-col items-center justify-between py-2.5 font-bold text-xs sm:text-sm transition-all duration-200 relative ${activeBorder}`;
           dayBtn.onclick = () => selectDate(dateObj);
 
-          const dot1Color = status1 === "green" ? "bg-emerald-500" : (status1 === "red" ? "bg-red-500" : "bg-forest-300/50");
-          const dot2Color = status2 === "green" ? "bg-emerald-500" : (status2 === "red" ? "bg-red-500" : "bg-forest-300/50");
+          const pill1Color = s1 === "green" ? "bg-emerald-400" : (s1 === "red" ? "bg-red-400" : "bg-forest-100");
+          const pill2Color = s2 === "green" ? "bg-emerald-400" : (s2 === "red" ? "bg-red-400" : "bg-forest-100");
 
           dayBtn.innerHTML = `
-            <span>${day}</span>
-            <div class="flex space-x-0.5 mt-1">
-              <span class="w-1.5 h-1.5 rounded-full ${dot1Color}"></span>
-              <span class="w-1.5 h-1.5 rounded-full ${dot2Color}"></span>
+            <span class="text-forest-800">${day}</span>
+            <div class="flex space-x-1 w-full px-2 mt-1">
+              <span class="h-1 flex-1 rounded-full ${pill1Color} transition-all duration-300"></span>
+              <span class="h-1 flex-1 rounded-full ${pill2Color} transition-all duration-300"></span>
             </div>
           `;
         }
-        
         grid.appendChild(dayBtn);
       }
     }
 
     // ----------------------------------------------------
-    // 7. 當日編輯模組與邏輯
+    // 6. 日誌卡片展開與編輯邏輯
     // ----------------------------------------------------
     function formatDateString(date) {
       const y = date.getFullYear();
@@ -663,8 +729,11 @@
     function selectDate(dateObj) {
       currentSelectedDate = dateObj;
       const dateStr = formatDateString(dateObj);
-      
+
       renderCalendar();
+
+      const editorCard = document.getElementById('editor-card');
+      editorCard.classList.remove('hidden');
 
       const weekDays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
       document.getElementById('editor-week').innerText = weekDays[dateObj.getDay()];
@@ -679,99 +748,70 @@
       updateSlotButtonUI('slot1', dayData.slot1.status);
       updateSlotButtonUI('slot2', dayData.slot2.status);
 
-      updateDayBadge(dayData);
+      updateTodayGrowthPercent();
+
+      setTimeout(() => {
+        editorCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 80);
+    }
+
+    function ensureDateStructure(dateStr) {
+      if (!dailyLogs[dateStr]) dailyLogs[dateStr] = {};
+      if (!dailyLogs[dateStr].slot1) dailyLogs[dateStr].slot1 = { text: "", status: "empty" };
+      if (!dailyLogs[dateStr].slot2) dailyLogs[dateStr].slot2 = { text: "", status: "empty" };
     }
 
     function updateSlotButtonUI(slotKey, status) {
-      const btnEmpty = document.getElementById(`btn-${slotKey}-empty`);
       const btnGreen = document.getElementById(`btn-${slotKey}-green`);
       const btnRed = document.getElementById(`btn-${slotKey}-red`);
 
-      btnEmpty.className = "px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-150 text-forest-400 hover:bg-forest-100";
-      btnGreen.className = "px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-150 text-emerald-600/60 hover:bg-emerald-50 flex items-center space-x-0.5";
-      btnRed.className = "px-2 py-1 text-[11px] font-bold rounded-lg transition-all duration-150 text-red-600/60 hover:bg-red-50 flex items-center space-x-0.5";
+      btnGreen.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg text-emerald-600/70 hover:bg-emerald-50 flex items-center space-x-0.5 transition-all";
+      btnRed.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg text-red-600/70 hover:bg-red-50 flex items-center space-x-0.5 transition-all";
 
       if (status === 'green') {
-        btnGreen.className = "px-2 py-1 text-[11px] font-black rounded-lg bg-emerald-500 text-white shadow-sm flex items-center space-x-0.5";
+        btnGreen.className = "px-2.5 py-1 text-[10px] font-black rounded-lg bg-emerald-500 text-white shadow-sm flex items-center space-x-0.5 transition-all";
       } else if (status === 'red') {
-        btnRed.className = "px-2 py-1 text-[11px] font-black rounded-lg bg-red-500 text-white shadow-sm flex items-center space-x-0.5";
-      } else {
-        btnEmpty.className = "px-2 py-1 text-[11px] font-black rounded-lg bg-forest-700 text-white shadow-sm";
+        btnRed.className = "px-2.5 py-1 text-[10px] font-black rounded-lg bg-red-500 text-white shadow-sm flex items-center space-x-0.5 transition-all";
       }
     }
 
     function setSlotStatus(slotKey, status) {
       const dateStr = formatDateString(currentSelectedDate);
       ensureDateStructure(dateStr);
-      
-      dailyLogs[dateStr][slotKey].status = status;
-      
-      updateSlotButtonUI(slotKey, status);
-      updateDayBadge(dailyLogs[dateStr]);
+
+      const currentStatus = dailyLogs[dateStr][slotKey].status;
+      const newStatus = (currentStatus === status) ? 'empty' : status;
+
+      dailyLogs[dateStr][slotKey].status = newStatus;
+      updateSlotButtonUI(slotKey, newStatus);
       
       renderCalendar();
       saveToLocalStorage();
     }
 
+    // 當使用者打字輸入任務名稱時
     function saveCurrentInputs() {
       const dateStr = formatDateString(currentSelectedDate);
       ensureDateStructure(dateStr);
 
-      const text1 = document.getElementById('input-slot1').value;
-      const text2 = document.getElementById('input-slot2').value;
+      dailyLogs[dateStr].slot1.text = document.getElementById('input-slot1').value;
+      dailyLogs[dateStr].slot2.text = document.getElementById('input-slot2').value;
 
-      dailyLogs[dateStr].slot1.text = text1;
-      dailyLogs[dateStr].slot2.text = text2;
-
+      updateTodayGrowthPercent();
       saveToLocalStorage();
     }
 
-    function updateDayBadge(dayData) {
-      const badge = document.getElementById('editor-day-badge');
-      const text = document.getElementById('editor-score-text');
-      
-      const s1 = dayData.slot1?.status || "empty";
-      const s2 = dayData.slot2?.status || "empty";
-
-      let score = 0;
-      if (s1 === 'green') score += 0.5;
-      if (s2 === 'green') score += 0.5;
-
-      if (s1 === 'empty' && s2 === 'empty') {
-        badge.className = "px-3 py-1.5 bg-forest-50 rounded-2xl flex items-center space-x-1 text-xs font-bold text-forest-500";
-        text.innerText = "今日尚未評分";
-      } else {
-        badge.className = "px-3 py-1.5 bg-emerald-50 rounded-2xl flex items-center space-x-1 text-xs font-black text-emerald-700 border border-emerald-100";
-        text.innerText = `自律度：+${score} 天`;
-      }
+    function closeEditor() {
+      document.getElementById('editor-card').classList.add('hidden');
     }
 
     // ----------------------------------------------------
-    // 8. 全域統計與動態植物狀態計算
-    // ----------------------------------------------------
-    function recalculateStats() {
-      let totalGreenSlots = 0;
-      
-      Object.keys(dailyLogs).forEach(dateKey => {
-        const dateObj = new Date(dateKey);
-        if (dateObj >= START_DATE) {
-          if (dailyLogs[dateKey].slot1?.status === 'green') totalGreenSlots++;
-          if (dailyLogs[dateKey].slot2?.status === 'green') totalGreenSlots++;
-        }
-      });
-
-      const totalGreenDays = totalGreenSlots * 0.5;
-      updatePlantVisualization(totalGreenDays);
-    }
-
-    // ----------------------------------------------------
-    // 9. 匯出/匯入（JSON 備份模組）
+    // 7. 備份與還原工具組
     // ----------------------------------------------------
     function exportData() {
       try {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dailyLogs, null, 2));
         const downloadAnchor = document.createElement('a');
-        
         const date = new Date();
         const formattedDate = `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
         
@@ -780,8 +820,7 @@
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
-        
-        showToast("📦 備份檔案匯出成功！請妥善保存於手機或電腦。");
+        showToast("📦 備份檔案下載成功！");
       } catch (e) {
         showToast("⚠️ 匯出備份失敗，您的裝置不支援此操作", "amber");
       }
@@ -799,42 +838,50 @@
       reader.onload = function(e) {
         try {
           const parsedData = JSON.parse(e.target.result);
-          
           if (typeof parsedData === 'object' && parsedData !== null) {
             dailyLogs = parsedData;
-            
-            if (isLocalStorageSupported) {
-              localStorage.setItem('evergrowth_logs', JSON.stringify(dailyLogs));
-            }
+            localStorage.setItem('evergrowth_logs', JSON.stringify(dailyLogs));
             
             recalculateStats();
             selectDate(currentSelectedDate);
             changeMonth(currentSelectedDate.getMonth() + 1);
-            
-            showToast("🌱 備份日誌匯入成功！小樹進度已同步更新。");
+            showToast("🌱 成功匯入備份！小樹已同步長大。");
           } else {
-            showToast("❌ 匯入失敗：無效的備份檔案格式", "red");
+            showToast("❌ 格式不符：無效的備份檔案", "red");
           }
         } catch (err) {
-          showToast("❌ 讀取檔案出錯，請確認檔案格式是否正確", "red");
+          showToast("❌ 讀取備份檔案失敗", "red");
         }
       };
       reader.readAsText(file);
     }
 
-    // ----------------------------------------------------
-    // 10. 全域自訂 Toast 提示
-    // ----------------------------------------------------
+    function confirmReset() {
+      document.getElementById('reset-modal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      document.getElementById('reset-modal').classList.add('hidden');
+    }
+
+    function executeReset() {
+      dailyLogs = {};
+      localStorage.removeItem('evergrowth_logs');
+      recalculateStats();
+      closeEditor();
+      changeMonth(5);
+      selectDate(START_DATE);
+      closeResetModal();
+      showToast("🧹 所有資料已清空，小樹重新萌芽。");
+    }
+
     function showToast(message, type = "success") {
       const toast = document.getElementById('toast');
       const toastText = document.getElementById('toast-text');
-      
       toastText.innerText = message;
-      
+
       if (type === "red") {
         toast.className = "fixed bottom-6 right-6 bg-red-800 text-white px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold shadow-xl transition-all duration-300 z-50 flex items-center space-x-2";
-      } else if (type === "amber") {
-        toast.className = "fixed bottom-6 right-6 bg-amber-700 text-white px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold shadow-xl transition-all duration-300 z-50 flex items-center space-x-2";
       } else {
         toast.className = "fixed bottom-6 right-6 bg-forest-800 text-white px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold shadow-xl transition-all duration-300 z-50 flex items-center space-x-2";
       }
@@ -845,7 +892,7 @@
       setTimeout(() => {
         toast.classList.remove('opacity-100', 'translate-y-0');
         toast.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
-      }, 3500);
+      }, 3000);
     }
   </script>
 </body>
