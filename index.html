@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evergrowth - 暑期自律與小樹成長日誌</title>
+  <title>Evergrowth - 小樹成長日誌</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -75,20 +75,17 @@
               <span id="save-indicator-text">已儲存</span>
             </div>
           </div>
-          <p class="text-[10px] sm:text-xs text-forest-400 font-medium mt-0.5">暑期自律與小樹成長日誌</p>
+          <p class="text-[10px] sm:text-xs text-forest-400 font-medium mt-0.5">小樹成長日誌</p>
         </div>
       </div>
 
-      <!-- 右側備份/重置按鈕 -->
+      <!-- 右側備份功能 -->
       <div class="flex items-center space-x-1.5">
-        <button onclick="exportData()" title="匯出備份" class="p-2 text-forest-500 hover:text-forest-700 hover:bg-forest-100 rounded-xl transition duration-200">
+        <button onclick="triggerImport()" title="匯入備份" class="p-2 text-forest-500 hover:text-forest-700 hover:bg-forest-100 rounded-xl transition duration-200">
           <i data-lucide="file-up" class="w-5 h-5"></i>
         </button>
-        <button onclick="triggerImport()" title="匯入備份" class="p-2 text-forest-500 hover:text-forest-700 hover:bg-forest-100 rounded-xl transition duration-200">
+        <button onclick="exportData()" title="匯出備份" class="p-2 text-forest-500 hover:text-forest-700 hover:bg-forest-100 rounded-xl transition duration-200">
           <i data-lucide="file-down" class="w-5 h-5"></i>
-        </button>
-        <button onclick="confirmReset()" title="清空所有資料" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition duration-200">
-          <i data-lucide="trash-2" class="w-5 h-5"></i>
         </button>
         <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
       </div>
@@ -114,9 +111,9 @@
         </div>
         
         <!-- 植物介紹文案 -->
-        <h3 id="plant-title" class="font-bold text-forest-800 text-base">神秘的綠色種子</h3>
+        <h3 id="plant-title" class="font-bold text-forest-800 text-base">神秘的種子</h3>
         <p id="plant-desc" class="text-xs text-forest-400 mt-1.5 px-2 leading-relaxed">
-          快寫下今天上午 the 收穫喚醒它吧！
+          快寫下今天上午的收穫喚醒它吧！
         </p>
       </div>
 
@@ -127,7 +124,7 @@
           <div class="flex justify-between items-end">
             <div>
               <p class="text-xs text-forest-400 font-bold mb-1">
-                累積「善用時間」天數 (一格綠色 = 0.5 天)
+                累積(善用時間)天數
               </p>
               <div class="text-3xl sm:text-4xl font-black text-forest-800 tracking-tight">
                 <span id="stats-days-val">0.0</span> <span class="text-sm font-bold text-forest-500">天</span>
@@ -153,11 +150,11 @@
             </div>
             <div class="text-center border-r border-forest-100/60 px-1">
               <span class="block">🌿 樹苗階段</span>
-              <span class="text-[9px] text-forest-400/80 font-normal">寫了上午</span>
+              <span class="text-[9px] text-forest-400/80 font-normal">善用了(上午)</span>
             </div>
             <div class="text-center pl-1">
               <span class="block">🌳 大樹階段</span>
-              <span class="text-[9px] text-forest-400/80 font-normal">寫了上午+下午</span>
+              <span class="text-[9px] text-forest-400/80 font-normal">善用了(上午&下午)</span>
             </div>
           </div>
         </div>
@@ -178,8 +175,8 @@
           <!-- 2/3寬度：淡黃色勵志語錄卡 (col-span-2) -->
           <div class="col-span-2 bg-amber-50/70 border border-amber-200/50 rounded-2xl p-4 flex flex-col justify-center items-center text-center">
             <div class="text-amber-800 font-medium text-xs sm:text-sm leading-relaxed space-y-1">
-              <p class="font-bold text-amber-900">敢想敢做，錯了就改</p>
-              <p class="text-amber-700">小步慢走，積極試錯</p>
+              <p class="font-bold text-amber-1000">敢想敢做，錯了就改</p>
+              <p class="font-bold text-amber-1000">小步慢走，積極試錯</p>
             </div>
           </div>
         </div>
@@ -189,7 +186,7 @@
     <!-- ==================== 中間：月份切換導航 ==================== -->
     <nav class="bg-white p-1.5 rounded-2xl border border-forest-100/50 shadow-sm flex overflow-x-auto no-scrollbar">
       <button onclick="changeMonth(5)" id="btn-m5" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap min-w-[70px]">
-        5月 <span class="text-[10px] opacity-80">(13日起)</span>
+        5月 <span class="text-[10px] opacity-80">(13日開始)</span>
       </button>
       <button onclick="changeMonth(6)" id="btn-m6" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap min-w-[70px]">
         6月
@@ -234,7 +231,7 @@
           <div class="flex justify-between items-center">
             <span class="text-xs font-bold text-forest-500 flex items-center space-x-1">
               <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i>
-              <span>上午格 (0.5天)</span>
+              <span>上午格</span>
             </span>
             <!-- 狀態切換 -->
             <div class="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-forest-100/60">
@@ -256,7 +253,7 @@
           <div class="flex justify-between items-center">
             <span class="text-xs font-bold text-forest-500 flex items-center space-x-1">
               <i data-lucide="moon" class="w-3.5 h-3.5 text-indigo-500"></i>
-              <span>下午格 (0.5天)</span>
+              <span>下午格</span>
             </span>
             <!-- 狀態切換 -->
             <div class="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-forest-100/60">
@@ -298,10 +295,10 @@
           <div class="space-y-2">
             <h4 class="font-black text-forest-800 text-sm flex items-center space-x-1">
               <span id="forest-accent-badge">🌱</span>
-              <span>屬於我的努力綠洲</span>
+              <span>努力綠洲</span>
             </h4>
-            <p class="text-xs text-forest-500 leading-relaxed">
-              這片土地會默默記錄你在整個暑假中每一天累積的努力。
+            <p class="text-xs text-forest-400 leading-relaxed font-semibold">
+              這片土地會默默記錄，你在暑假中每一天累積的努力。
             </p>
             <p class="text-xs text-forest-400 leading-relaxed font-semibold">
               善用時間，讓這片銀杏森林隨著暑假一同繁盛吧！
@@ -321,20 +318,6 @@
 
   </main>
 
-  <!-- 自訂重置彈出視窗 Modal -->
-  <div id="reset-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white max-w-sm w-full p-6 rounded-3xl border border-forest-100 shadow-2xl space-y-4">
-      <h3 class="text-lg font-bold text-forest-800">確定要清空所有資料嗎？</h3>
-      <p class="text-xs text-forest-500 leading-relaxed">
-        這將會抹除你所有的任務紀錄、評分狀態與小樹成長進度。此操作無法復原，建議您先導出備份。
-      </p>
-      <div class="flex space-x-2 pt-2">
-        <button onclick="closeResetModal()" class="flex-1 py-2.5 bg-forest-100 hover:bg-forest-200 text-forest-700 text-xs font-bold rounded-xl transition">取消</button>
-        <button onclick="executeReset()" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-xl transition">確定清除</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 自訂動態提示盒 Toast -->
   <div id="toast" class="fixed bottom-6 right-6 bg-forest-800 text-white px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold shadow-xl transition-all duration-300 translate-y-20 opacity-0 pointer-events-none flex items-center space-x-2 z-50">
     <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
@@ -351,7 +334,7 @@
 
     // 植物三階段定義：對應今日完成度 0%、50%、100%
     const GROWTH_STAGES = [
-      { minPercent: 0, title: "神秘的綠色種子", badge: "🌱 種子階段", desc: "快寫下今天上午的收穫喚醒它吧！" },
+      { minPercent: 0, title: "神秘的種子", badge: "🌱 種子階段", desc: "快寫下今天上午的收穫喚醒它吧！" },
       { minPercent: 50, title: "破土的嫩芽", badge: "🌿 樹苗階段", desc: "太棒了！你寫下了上午的收穫，種子已經破土長出小嫩芽！" },
       { minPercent: 100, title: "黃金銀杏樹", badge: "🌳 大樹階段", desc: "今日挑戰圓滿達成！小樹吸收了上下午的飽滿養分，長成了金黃燦爛的銀杏樹！" }
     ];
@@ -583,7 +566,7 @@
     }
 
     // ----------------------------------------------------
-    // 3D Isometric 森林渲染
+    // 3D Isometric 森林渲染 - 支援最高 36 棵樹的等角投影矩陣分佈！
     // ----------------------------------------------------
     function render3DForest(fullDaysCount) {
       const svg = document.getElementById('forest-3d-svg');
@@ -605,28 +588,30 @@
       // 2. 計算與顯示樹木數量
       document.getElementById('forest-tree-count').innerText = fullDaysCount;
 
-      // 3. 預設等角空間固定樹木坐標位置
-      const potentialPositions = [
-        { x: 250, y: 130 }, 
-        { x: 200, y: 140 }, 
-        { x: 300, y: 140 }, 
-        { x: 170, y: 160 }, 
-        { x: 250, y: 170 }, 
-        { x: 330, y: 160 }, 
-        { x: 220, y: 115 }, 
-        { x: 280, y: 115 }, 
-        { x: 140, y: 145 }, 
-        { x: 360, y: 145 }, 
-        { x: 210, y: 190 }, 
-        { x: 290, y: 190 }  
-      ];
+      // 3. 完美對應 6x6 (最高36棵樹) 的等角網格坐標產生器，保證樹林能整齊而飽滿地「填滿草地」
+      const potentialPositions = [];
+      const steps = 6; // 6行 6列 = 36點
+      for (let r = 0; r < steps; r++) {
+        for (let c = 0; c < steps; c++) {
+          // 在 3D 平面上進行坐標等比例對映
+          const u = 0.12 + (r * 0.76) / (steps - 1);
+          const v = 0.12 + (c * 0.76) / (steps - 1);
+          // 轉換為 2D SVG 畫布坐標點
+          const x = 250 + (u - v) * 140;
+          const y = 150 + (u + v - 1) * 55;
+          potentialPositions.push({ x, y });
+        }
+      }
+
+      // 對坐標進行 Y 軸由小到大排序 (Z-index 排序)，保證後方的樹先畫、前方的樹完美疊在上方！
+      potentialPositions.sort((a, b) => a.y - b.y);
 
       // 4. 在 3D 地圖中種植出當月份的迷你版黃金銀杏樹
       for (let i = 0; i < Math.min(fullDaysCount, potentialPositions.length); i++) {
         const pos = potentialPositions[i];
         
         const miniTreeHTML = `
-          <g transform="translate(${pos.x - 12}, ${pos.y - 25}) scale(0.3)">
+          <g transform="translate(${pos.x - 10}, ${pos.y - 20}) scale(0.24)">
             <!-- 樹幹 -->
             <rect x="36" y="55" width="8" height="25" rx="3" fill="#5c4033" />
             <!-- 黃金漸層樹冠 -->
@@ -726,6 +711,7 @@
       return `${y}-${m}-${d}`;
     }
 
+    // 展開並選擇特定日期
     function selectDate(dateObj) {
       currentSelectedDate = dateObj;
       const dateStr = formatDateString(dateObj);
@@ -789,7 +775,6 @@
       saveToLocalStorage();
     }
 
-    // 當使用者打字輸入任務名稱時
     function saveCurrentInputs() {
       const dateStr = formatDateString(currentSelectedDate);
       ensureDateStructure(dateStr);
@@ -806,7 +791,7 @@
     }
 
     // ----------------------------------------------------
-    // 7. 備份與還原工具組
+    // 7. 備份與還原工具組 (JSON 匯入、匯出)
     // ----------------------------------------------------
     function exportData() {
       try {
@@ -854,25 +839,6 @@
         }
       };
       reader.readAsText(file);
-    }
-
-    function confirmReset() {
-      document.getElementById('reset-modal').classList.remove('hidden');
-    }
-
-    function closeResetModal() {
-      document.getElementById('reset-modal').classList.add('hidden');
-    }
-
-    function executeReset() {
-      dailyLogs = {};
-      localStorage.removeItem('evergrowth_logs');
-      recalculateStats();
-      closeEditor();
-      changeMonth(5);
-      selectDate(START_DATE);
-      closeResetModal();
-      showToast("🧹 所有資料已清空，小樹重新萌芽。");
     }
 
     function showToast(message, type = "success") {
